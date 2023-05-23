@@ -62,12 +62,8 @@ case class TopComponentInstances(
         }
       }
     }
-    flattenWithBlankPrefix(
-      List(List(
-        line(s"#ifdef TGT_OS_TYPE_ZEPHYR"),
-        line(s"#include <zephyr/kernel.h>"),
-        line("#endif")
-      )) ++ instances.map(getCode))
+    
+    flattenWithBlankPrefix(instances.map(getCode))
   }
 
   private def getImplType(ci: ComponentInstance) = {

@@ -206,6 +206,22 @@ case class TopHelperFns(
             case Some(_) => s"static_cast<NATIVE_UINT_TYPE>(CPUs::$name),"
             case None => "Os::Task::TASK_DEFAULT, // Default CPU"
           }
+
+          List(line("#ifdef TGT_OS_TYPE_ZEPHYR")) :::
+          wrapInScope(
+              s"$name.start(",
+              (
+                List(
+                  priority,
+                  s"${name}_stack_size_real,",
+                  cpu,
+                  s"static_cast<NATIVE_UINT_TYPE>(TaskIds::$name),",
+                  s"${name}_stack",
+                )
+              ).map(line),
+              ");"
+          ) :::
+          List(line("#else")) :::
           wrapInScope(
             s"$name.start(",
             (
@@ -213,11 +229,13 @@ case class TopHelperFns(
                 priority,
                 stackSize,
                 cpu,
-                s"static_cast<NATIVE_UINT_TYPE>(TaskIds::$name)",
+                s"static_cast<NATIVE_UINT_TYPE>(TaskIds::$name),",
+                "nullptr",
               )
             ).map(line),
             ");"
-          )
+          ) :::
+          List(line("#endif"))
         }
         else Nil
       }

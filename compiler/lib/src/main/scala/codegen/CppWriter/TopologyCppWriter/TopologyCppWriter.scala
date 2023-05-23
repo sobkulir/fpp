@@ -43,7 +43,10 @@ case class TopologyCppWriter(
       linesMember(
         List(
           Line.blank,
-          CppWriter.headerLine(s.getRelativePath(fileName).toString)
+          CppWriter.headerLine(s.getRelativePath(fileName).toString),
+          line("#ifdef TGT_OS_TYPE_ZEPHYR"),
+          line("#include <zephyr/kernel.h>"),
+          line("#endif")
         ),
         CppDoc.Lines.Cpp
       )
